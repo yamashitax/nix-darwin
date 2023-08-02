@@ -7,10 +7,13 @@
   ... 
 }: let
   marketplace-extensions = with extensions.extensions.${pkgs.system}.vscode-marketplace; [
+    bbenoist.nix
     bokuweb.vscode-ripgrep
     evgeniypeshkov.syntax-highlighter 
-    ifaxity.onedark
     sourcegraph.cody-ai
+    usernamehw.prism
+    ziglang.vscode-zig
+    tatosjb.fuzzy-search
   ]; 
 in {
   home.packages = with pkgs; [
@@ -42,16 +45,41 @@ in {
       mutableExtensionsDir = true; 
       package = pkgs.vscodium;
       userSettings = {
-        "extensions.autoUpdate" = false;
+        # Editor
         "editor.fontFamily" = "JetBrains Mono";
         "editor.fontLigatures" = true;
         "editor.fontSize" = 10;
-        "vim.leader" = "<space>";
-        "vim.hlsearch" = true;
-        "vim.useSystemClipboard" = true;
-        "vim.smartRelativeLine" = true;
+        "editor.lineHeight" = 1.5;
+        "editor.minimap.renderCharacters" = false;
+        # Extensions
+        "extensions.autoUpdate" = false;
+        # Vim
         "vim.highlightedyank.enable" = true;
-        "workbench.colorTheme" = "OneLight++";
+        "vim.hlsearch" = true;
+        "vim.leader" = "<space>";
+        "vim.smartRelativeLine" = true;
+        "vim.useSystemClipboard" = true;
+        "vim.normalModeKeyBindingsNonRecursive" = [
+          {
+            "before" = ["<leader>" "s" "f"];
+            "commands" = ["extension.fuzzySearch"];
+          }
+          {
+            "before" = ["<leader>" "s" "d" "a"];
+            "commands" = ["extension.ripgrep"];
+          }
+          {
+            "before" = ["K"];
+            "commands" = ["editor.action.showHover"];
+          }
+          {
+            "before" = ["<C-w>"];
+            "commands" = ["workbench.action.terminal.toggleTerminal"];
+          }
+        ];
+        # Workbench
+        "workbench.colorTheme" = "Prism (No Bold)";
+        "workbench.tips.enabled" = false;
       };
     };
   
