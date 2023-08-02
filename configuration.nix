@@ -2,14 +2,8 @@
 
 {
   # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
-
-  users.users."yamashita" = {               # macOS user
-    home = "/Users/yamashita";
-    shell = pkgs.zsh;                     # Default shell
-  };
 
   fonts = {                               # Fonts
     fontDir.enable = true;
@@ -25,25 +19,31 @@
   environment = {
     shells = with pkgs; [ zsh ];          # Default shell
     variables = {                         # System variables
-      EDITOR = "nvim";
-      VISUAL = "nvim";
+      EDITOR = "codium";
+      VISUAL = "codium";
     };
     systemPackages = with pkgs; [         # Installed Nix packages
       # Terminal
-      direnv
       fd
-      git
       rectangle
       ripgrep
       silver-searcher
       # zig.packages."${system}".master
     ];
   };
+  homebrew = {                            # Declare Homebrew using Nix-Darwin
+    enable = true;
+    onActivation = {
+      autoUpdate = true;                 # Auto update packages
+      upgrade = false;
+      cleanup = "zap";                    # Uninstall not listed packages and casks
+    };
+    casks = [ "google-japanese-ime" ];
+  }; 
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
-  # nix.package = pkgs.nix;
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";    
