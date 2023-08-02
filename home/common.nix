@@ -3,6 +3,7 @@
   lib, 
   pkgs,
   devenv,
+  zig,
   ... 
 }: let
   marketplace-extensions = with extensions.extensions.${pkgs.system}.vscode-marketplace; [
@@ -14,16 +15,25 @@
 in {
   home.packages = with pkgs; [
     devenv.packages.aarch64-darwin.devenv
+    fd
+    rectangle
+    zig.packages."${pkgs.system}".master
   ];
 
   programs = {
     direnv = {
       enable = true;
     };
+
+    fzf = {
+      enable = true;
+    };
+
     git = {
       enable = true;
       userName = "山下";
     };
+
     vscode = {
       enable = true;
       extensions = with pkgs.vscode-extensions; [
@@ -43,6 +53,10 @@ in {
         "vim.highlightedyank.enable" = true;
         "workbench.colorTheme" = "OneLight++";
       };
+    };
+  
+    ripgrep = {
+      enable = true;
     };
   
     ssh = {

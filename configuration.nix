@@ -22,15 +22,8 @@
       EDITOR = "codium";
       VISUAL = "codium";
     };
-    systemPackages = with pkgs; [         # Installed Nix packages
-      # Terminal
-      fd
-      rectangle
-      ripgrep
-      silver-searcher
-      # zig.packages."${system}".master
-    ];
   };
+
   homebrew = {                            # Declare Homebrew using Nix-Darwin
     enable = true;
     onActivation = {

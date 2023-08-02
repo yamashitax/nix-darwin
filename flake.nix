@@ -34,7 +34,7 @@
       	    home-manager.darwinModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit extensions devenv; };
+              home-manager.extraSpecialArgs = { inherit extensions devenv zig; };
               home-manager.backupFileExtension = "backup";
               home-manager.users = {
                 work      = import ./home/work/home.nix;
