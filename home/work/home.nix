@@ -2,7 +2,6 @@
   extensions,
   lib, 
   pkgs,
-  devenv,
   ... 
 }: 
 {

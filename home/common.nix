@@ -41,8 +41,7 @@ in {
       enable = true;
       extensions = with pkgs.vscode-extensions; [
         vscodevim.vim
-      ] ++ marketplace-extensions;
-      mutableExtensionsDir = true; 
+       ] ++ marketplace-extensions;
       package = pkgs.vscodium;
       userSettings = {
         # Editor
