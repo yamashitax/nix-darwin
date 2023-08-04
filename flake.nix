@@ -16,9 +16,11 @@
 
     devenv.url = "github:cachix/devenv/latest";
     zig.url = "github:mitchellh/zig-overlay";
+
+    nil.url = "github:oxalica/nil";
   };
 
-  outputs = inputs @ { self, darwin, nixpkgs, home-manager, nix-vscode-extensions, devenv, zig, ... }:
+  outputs = inputs @ { self, darwin, nixpkgs, home-manager, nix-vscode-extensions, devenv, zig, nil, ... }:
     let
       system = "aarch64-darwin";
       extensions = nix-vscode-extensions;
@@ -34,7 +36,7 @@
       	    home-manager.darwinModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit extensions devenv zig; };
+              home-manager.extraSpecialArgs = { inherit extensions devenv zig nil; };
               home-manager.backupFileExtension = "backup";
               home-manager.users = {
                 work      = import ./home/work/home.nix;

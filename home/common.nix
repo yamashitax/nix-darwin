@@ -4,6 +4,7 @@
   pkgs,
   devenv,
   zig,
+  nil,
   ... 
 }: let
   marketplace-extensions = with extensions.extensions.${pkgs.system}.vscode-marketplace; [
@@ -14,6 +15,7 @@
     usernamehw.prism
     ziglang.vscode-zig
     tatosjb.fuzzy-search
+    dbaeumer.vscode-eslint
   ]; 
 in {
   home.packages = with pkgs; [
@@ -52,6 +54,9 @@ in {
         "editor.minimap.renderCharacters" = false;
         # Extensions
         "extensions.autoUpdate" = false;
+        # Nix
+        "nix.enableLanguageServer" = true;
+        "nix.serverPath" = "nil";
         # Vim
         "vim.highlightedyank.enable" = true;
         "vim.hlsearch" = true;
