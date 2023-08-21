@@ -12,18 +12,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
-
     devenv.url = "github:cachix/devenv/latest";
     zig.url = "github:mitchellh/zig-overlay";
 
     nil.url = "github:oxalica/nil";
   };
 
-  outputs = inputs @ { self, darwin, nixpkgs, home-manager, nix-vscode-extensions, devenv, zig, nil, ... }:
+  outputs = inputs @ { self, darwin, nixpkgs, home-manager, devenv, zig, nil, ... }:
     let
       system = "aarch64-darwin";
-      extensions = nix-vscode-extensions;
     in {
       darwinConfigurations = {
         yamashita = darwin.lib.darwinSystem {
@@ -36,8 +33,8 @@
       	    home-manager.darwinModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit extensions devenv zig nil; };
-              home-manager.backupFileExtension = "backup";
+              home-manager.extraSpecialArgs = { inherit devenv zig nil; };
+              home-manager.backupFileExtension = "backup.bak";
               home-manager.users = {
                 work      = import ./home/work/home.nix;
                 yamashita = import ./home/yamashita/home.nix;

@@ -1,28 +1,19 @@
 {
-  extensions,
-  lib, 
-  pkgs,
   devenv,
-  zig,
+  lib, 
   nil,
+  pkgs,
+  zig,
   ... 
 }: let
-  marketplace-extensions = with extensions.extensions.${pkgs.system}.vscode-marketplace; [
-    bbenoist.nix
-    bokuweb.vscode-ripgrep
-    evgeniypeshkov.syntax-highlighter 
-    sourcegraph.cody-ai
-    usernamehw.prism
-    ziglang.vscode-zig
-    tatosjb.fuzzy-search
-    dbaeumer.vscode-eslint
-  ]; 
 in {
   home.packages = with pkgs; [
-    devenv.packages.aarch64-darwin.devenv
+    cargo
+    devenv.packages."${pkgs.system}".devenv
     fd
+    nodejs-slim
     rectangle
-    zig.packages."${pkgs.system}".master
+    zig.packages."${pkgs.system}".master-2023-07-05
   ];
 
   programs = {
@@ -39,52 +30,14 @@ in {
       userName = "山下";
     };
 
-    vscode = {
+    neovim = {
       enable = true;
-      extensions = with pkgs.vscode-extensions; [
-        vscodevim.vim
-       ] ++ marketplace-extensions;
-      package = pkgs.vscodium;
-      userSettings = {
-        # Editor
-        "editor.fontFamily" = "JetBrains Mono";
-        "editor.fontLigatures" = true;
-        "editor.fontSize" = 10;
-        "editor.lineHeight" = 1.5;
-        "editor.minimap.renderCharacters" = false;
-        # Extensions
-        "extensions.autoUpdate" = false;
-        # Nix
-        "nix.enableLanguageServer" = true;
-        "nix.serverPath" = "nil";
-        # Vim
-        "vim.highlightedyank.enable" = true;
-        "vim.hlsearch" = true;
-        "vim.leader" = "<space>";
-        "vim.smartRelativeLine" = true;
-        "vim.useSystemClipboard" = true;
-        "vim.normalModeKeyBindingsNonRecursive" = [
-          {
-            "before" = ["<leader>" "s" "f"];
-            "commands" = ["extension.fuzzySearch"];
-          }
-          {
-            "before" = ["<leader>" "s" "d" "a"];
-            "commands" = ["extension.ripgrep"];
-          }
-          {
-            "before" = ["K"];
-            "commands" = ["editor.action.showHover"];
-          }
-          {
-            "before" = ["<C-w>"];
-            "commands" = ["workbench.action.terminal.toggleTerminal"];
-          }
-        ];
-        # Workbench
-        "workbench.colorTheme" = "Prism (No Bold)";
-        "workbench.tips.enabled" = false;
-      };
+      viAlias = true;
+      vimAlias = true;
+
+      extraLuaConfig = ''
+        ${lib.strings.fileContents ./init.lua}
+      '';
     };
   
     ripgrep = {
@@ -98,6 +51,17 @@ in {
           AddKeysToAgent yes
           IdentityFile ~/.ssh/id_ed25519
       '';
+    };
+
+    wezterm = {
+      enable = true;
+      extraConfig = ''
+      return {
+        font = wezterm.font("JetBrains Mono"),
+        hide_tab_bar_if_only_one_tab = true,
+      }
+      '';
+      enableZshIntegration = true;
     };
   };
   
