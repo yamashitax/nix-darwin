@@ -59,7 +59,7 @@ in {
       return {
         font = wezterm.font("JetBrains Mono"),
         hide_tab_bar_if_only_one_tab = true,
-        color_scheme = "test",
+        color_scheme = "One Light (base16)",
       }
       '';
       colorSchemes.test = rec {
