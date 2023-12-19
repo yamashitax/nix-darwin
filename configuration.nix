@@ -19,8 +19,8 @@
   environment = {
     shells = with pkgs; [ zsh ];          # Default shell
     variables = {                         # System variables
-      EDITOR = "codium";
-      VISUAL = "codium";
+      EDITOR = "hx";
+      VISUAL = "hx";
     };
   };
 
@@ -31,7 +31,10 @@
       upgrade = false;
       cleanup = "zap";                    # Uninstall not listed packages and casks
     };
-    casks = [ "google-japanese-ime" ];
+    casks = [
+      "google-japanese-ime"
+      # "unclack"
+    ];
   }; 
 
   security.pam.enableSudoTouchIdAuth = true;

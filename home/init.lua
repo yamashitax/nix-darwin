@@ -219,6 +219,10 @@ require('lazy').setup({
       require('nvim-autopairs').setup()
     end,
   },
+  {
+    'renerocksai/telekasten.nvim',
+    dependencies = {'nvim-telescope/telescope.nvim'}
+  }
 }, {})
 
 -- [[ Setting options ]]
@@ -302,6 +306,10 @@ require('telescope').setup {
     },
   },
 }
+
+require('telekasten').setup({
+  home = vim.fn.expand('~/iCloudDrive/Notes'),
+})
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
