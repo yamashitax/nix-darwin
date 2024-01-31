@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  # List packages installed in system profile. To search by name, run:
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
 
@@ -46,6 +45,7 @@
     package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";    
   };
+  nixpkgs.hostPlatform = "aarch64-darwin";
 
   # Darwin settings
   system.defaults.NSGlobalDomain.AppleMeasurementUnits = "Centimeters";
