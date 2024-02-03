@@ -23,82 +23,6 @@ let
       broken = false;
     };
   });
-
-  copilot = pkgs.writeShellApplication {
-    name = "copilot";
-    text = ''
-      ${pkgs.nodejs-slim}/bin/node ${pkgs.vimPlugins.copilot-vim}/dist/agent.js "''$@" 
-    '';
-  };
-
-  # newpr = pkgs.writeShellApplication {
-  #   name = "newpr";
-  #   text = ''
-  #     set -euo pipefail
-
-  #     readonly pr_commit="main"
-
-  #     # Autogenerate a branch name based on the commit subject.
-  #     readonly branch_name="$(${pkgs.git} show --no-patch --format="%f" "$pr_commit")"
-
-  #     # Create the new branch and switch to it.
-  #     ${pkgs.git} branch --no-track "$branch_name" origin/main
-  #     ${pkgs.git} switch "$branch_name"
-
-  #     # Cherry pick the desired commit.
-  #     if ! ${pkgs.git} cherry-pick "$pr_commit"; then
-  #         ${pkgs.git} cherry-pick --abort
-  #         ${pkgs.git} switch main
-  #         exit 1
-  #     fi
-
-  #     # Create a new remote branch by the same name.
-  #     ${pkgs.git} -c push.default=current push
-
-  #     # Go back to main branch.
-  #     ${pkgs.git} switch main
-  #   '';
-  # };
-
-  # updatepr = pkgs.writeShellApplication {
-  #   name = "updatepr";
-  #   text = ''
-  #     set -euo pipefail
-
-  #     if [[ $# -ne 1 ]]; then
-  #         echo "usage: $0 <pr-commit>" 2>&1
-  #         exit
-  #     fi
-
-  #     readonly pr_commit="$(${pkgs.git} rev-parse HEAD)"
-
-  #     readonly branch_name="$(${pkgs.git} show --no-patch --format="%f" "$pr_commit")"
-
-  #     ${pkgs.git} switch "$branch_name"
-
-  #     # Cherrypick the latest commit to the PR branch.
-  #     if ! ${pkgs.git} cherry-pick main; then
-  #         ${pkgs.git} cherry-pick --abort
-  #         ${pkgs.git} switch main
-  #         exit 1
-  #     fi
-
-  #     # Push the updated branch.
-  #     ${pkgs.git} push
-
-  #     # Go back to main.
-  #     ${pkgs.git} switch main
-
-  #     # This allows for scripted (non-interactive) use of interactive rebase.
-  #     export GIT_SEQUENCE_EDITOR=/usr/bin/true
-
-  #     # In two steps, squash the latest commit into its PR commit.
-  #     # 1. Mark the commit as a fixup
-  #     ${pkgs.git} commit --amend --fixup="$pr_commit"
-  #     # 2. Use the autosquash feature of interactive rebase to perform the squash.
-  #     ${pkgs.git} rebase --interactive --autosquash "${pr_commit}^"
-  #   '';
-  # };
 in {
   nixpkgs.overlays = [
     (final: prev: {
@@ -114,22 +38,21 @@ in {
   ];
   
   home.packages = with pkgs; [
+    asciinema
     bat
     devenv.packages."${pkgs.system}".devenv
     fd
+    hyperfine
     nodePackages."@tailwindcss/language-server"
     nodePackages.intelephense
     nodePackages.typescript
     nodePackages.typescript-language-server
-    nodePackages.vls
+    nodePackages.volar
     nodePackages.vscode-langservers-extracted
-    nodePackages.vue-language-server
     nodejs-slim
-    prettierd
     rectangle
     zig.packages."${pkgs.system}".master
     zls
-    # vimPlugins.copilot-vim
   ];
 
   programs = {
@@ -141,9 +64,27 @@ in {
       enable = true;
     };
 
-    git = {
+    git.ignores = [
+      ".DS_Store"
+    ];
+
+    jujutsu = {
       enable = true;
-      userName = "山下";
+      settings = {
+        ui = {
+          editor = "hx";
+          default-command = "log";
+        };
+        user = {
+          name = "山下";
+          email = "git@yamashit.ax";
+        };
+        snapshot.max-new-file-size = "10MiB";
+        template-aliases = {
+          "format_short_signature(signature)" = "signature.username()";
+          "format_short_id(id)" = "id.shortest()";
+        };
+      };
     };
 
     helix = {
@@ -153,50 +94,21 @@ in {
         theme = "catppuccin_latte";
 
         editor = {
-          line-number = "relative";
-          mouse = true;
-          bufferline = "multiple";
-          true-color = true;
           color-modes = true;
-          auto-format = true;
-          auto-save = true;
-
+          bufferline = "multiple";
+          completion-trigger-len = 3;
+          line-number = "relative";
           indent-guides.render = true;
+          indent-guides.character = "┊";
 
           cursor-shape = {
             insert = "bar";
             normal = "block";
             select = "underline";
           };
-
-          file-picker = {
-            hidden = false;
-          };
-
-          lsp = {
-            auto-signature-help = false;
-            display-messages = true;
-            display-inlay-hints = true;
-            # copilot-auto = true;
-          };
-
-          statusline = {
-            left = ["mode" "spinner" "version-control" "file-name"];
-            right = ["file-type" "file-encoding"];
-            mode.normal = "NORMAL";
-            mode.insert = "INSERT";
-            mode.select = "SELECT";
-          };
-
-          soft-wrap = {
-            enable = true;
-          };
         };
 
         keys = {
-          # insert = {
-          #   right = "apply_copilot_completion";
-          # };
           normal = {
             space = {
               e = ":write";
@@ -208,10 +120,6 @@ in {
       };
       languages = {
         language-server = {
-          copilot = {
-            command = "${copilot}/bin/copilot";
-            args = ["--stdio"];
-          };
           nu-lsp = {
             command = "${pkgs.nushell}/bin/nu";
             args = ["--lsp"];
@@ -237,68 +145,64 @@ in {
           {
             name = "nix";
             formatter = {command = "alejandra";};
-            language-servers = ["nil" "copilot"];
+            language-servers = ["nil"];
             auto-format = true;
           }
           {
             name = "rust";
-            language-servers = ["rust-analyzer" "copilot"];
+            language-servers = ["rust-analyzer"];
           }
           {
             name = "lua";
-            language-servers = ["lua-language-server" "copilot"];
+            language-servers = ["lua-language-server"];
           }
           {
             name = "javascript";
-            language-servers = ["typescript-language-server" "copilot"];
+            language-servers = ["typescript-language-server"];
           }
           {
             name = "typescript";
-            language-servers = ["typescript-language-server" "copilot"];
+            language-servers = ["typescript-language-server"];
           }
           {
             name = "bash";
-            language-servers = ["bash-language-server" "copilot"];
+            language-servers = ["bash-language-server"];
           }
           {
             name = "hcl";
-            language-servers = ["terraform-ls" "copilot"];
+            language-servers = ["terraform-ls"];
           }
           {
             name = "tfvars";
-            language-servers = ["terraform-ls" "copilot"];
+            language-servers = ["terraform-ls"];
           }
           {
             name = "go";
-            language-servers = ["gopls" "copilot"];
+            language-servers = ["gopls"];
           }
           {
             name = "nu";
-            language-servers = ["nu-lsp" "copilot"];
+            language-servers = ["nu-lsp"];
           }
           {
             name = "css";
-            language-servers = ["vscode-css-language-server" "copilot"];
+            language-servers = ["vscode-css-language-server"];
           }
           {
             name = "html";
-            language-servers = ["vscode-html-language-server" "copilot"];
-          }
-          {
-            name = "nickel";
-            language-servers = ["copilot"];
+            language-servers = ["vscode-html-language-server"];
           }
           {
             name = "yaml";
-            language-servers = ["yaml-language-server" "copilot"];
+            language-servers = ["yaml-language-server"];
           }
           {
             name = "toml";
-            language-servers = ["taplo" "copilot"];
+            language-servers = ["taplo"];
           }
           {
             name = "just";
-            language-servers = ["copilot"];
+            language-servers = ;
           }
           {
             name = "php";
@@ -320,11 +224,6 @@ in {
       enable = true;
       viAlias = true;
       vimAlias = true;
-      # plugins = with pkgs.vimPlugins; [ copilot-vim ];
-
-      # extraLuaConfig = ''
-      #   ${lib.strings.fileContents ./init.lua}
-      # '';
     };
   
     ripgrep = {
@@ -340,43 +239,14 @@ in {
       '';
     };
 
-    vscode = {
-      enable = true;
-      extensions = with pkgs.vscode-extensions; [
-        github.copilot
-        github.copilot-chat
-        bmewburn.vscode-intelephense-client
-      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-        {
-          name = "cody-ai";
-          publisher = "sourcegraph";
-          version = "1.1.1704822233";
-          sha256 = "sha256-/UyoZfs/euUBK7R66706NR7HU+kOwgR7FxvtBTAuAD8=";
-        }
-        {
-          name = "prism";
-          publisher = "usernamehw";
-          version = "1.2.0";
-          sha256 = "sha256-BCRSTWcdXnoRm7WKworCYrzIfPQ1Ho/vupjRQfyUZI0=";
-        }
-        # "editor.lineHeight": 1.5,
-        # "editor.minimap.renderCharacters": false,
-        # "workbench.tips.enabled": false,
-        # "terminal.integrated.minimumContrastRatio": 2.5,
-        {
-          name = "vscode-kakoune";
-          publisher = "reykjalin";
-          version = "1.3.1";
-          sha256 = "sha256-79nINsgLYRdzikcZshubGt7xMDprlJ246zQejrr3vN0=";
-        }
-        
-      ];
-    };
-
     wezterm = {
       enable = true;
       extraConfig = ''
       return {
+        keys = {
+          { key = "UpArrow",   mods = "SHIFT", action = wezterm.action.ScrollToPrompt(-1) },
+          { key = "DownArrow", mods = "SHIFT", action = wezterm.action.ScrollToPrompt(1) },
+        },
         font = wezterm.font("JetBrains Mono"),
         hide_tab_bar_if_only_one_tab = true,
         color_scheme = "Catppuccin Latte",

@@ -3,6 +3,9 @@
 
   nixConfig = {
     extra-experimental-features = "nix-command flakes";
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
+    extra-trusted-users = "yamashita";
   };
 
   inputs = {
@@ -34,7 +37,7 @@
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -45,20 +48,16 @@
   };
 
   outputs = inputs @ { self, nix-darwin, nixpkgs, home-manager, devenv, zig, helix-master, catppuccin-helix, ... }: {
-    # overlays = import ./overlays { inherit inputs; };
-    
     darwinConfigurations."default" = nix-darwin.lib.darwinSystem {
       modules = [
         ./configuration.nix
   	    ./home/personal/configuration.nix
-  	    ./home/work/configuration.nix
 
         home-manager.darwinModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit devenv zig helix-master catppuccin-helix nixpkgs; };
           home-manager.users = {
-            work     = import ./home/work/home.nix;
             yamashita = import ./home/personal/home.nix;
           };
         }
@@ -67,31 +66,4 @@
 
     darwinPackages = self.darwinConfigurations."default".pkgs;
   };
-  
-  # outputs = inputs @ { self, darwin, nixpkgs, home-manager, devenv, zig, nil, helix-master, catppuccin-helix, ... }:
-  #   let
-  #     system = "aarch64-darwin";
-  #   in {
-  #     darwinConfigurations = {
-  #       yamashita = darwin.lib.darwinSystem {
-  #     	  inherit system;
-  #     	  modules = [
-  #     	    ./configuration.nix
-  #     	    ./home/yamashita/configuration.nix
-  #     	    ./home/work/configuration.nix
-
-  #     	    home-manager.darwinModules.home-manager {
-  #             home-manager.useGlobalPkgs = true;
-  #             home-manager.useUserPackages = true;
-  #             home-manager.extraSpecialArgs = { inherit devenv zig nil helix-master catppuccin-helix; };
-  #             home-manager.backupFileExtension = "backup.bak";
-  #             home-manager.users = {
-  #               work      = import ./home/work/home.nix;
-  #               yamashita = import ./home/yamashita/home.nix;
-  #             };
-  #           }
-  #     	  ];
-  #     	};
-  #     };
-  #   };
 }

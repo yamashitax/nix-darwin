@@ -32,7 +32,8 @@
     };
     casks = [
       "google-japanese-ime"
-      # "unclack"
+      "librewolf"
+      "sensiblesidebuttons"
     ];
   }; 
 
@@ -48,21 +49,40 @@
   nixpkgs.hostPlatform = "aarch64-darwin";
 
   # Darwin settings
-  system.defaults.NSGlobalDomain.AppleMeasurementUnits = "Centimeters";
-  system.defaults.NSGlobalDomain.AppleMetricUnits = 1;
-  system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
-  system.defaults.NSGlobalDomain.AppleTemperatureUnit = "Celsius";
-  system.defaults.NSGlobalDomain.InitialKeyRepeat = 15;
-  system.defaults.NSGlobalDomain.KeyRepeat = 1;
-  
-  system.defaults.trackpad.ActuationStrength = 0; # silent clicking
-  system.defaults.trackpad.FirstClickThreshold = 0; # light clicking
-  system.defaults.trackpad.SecondClickThreshold = 0; # light force touch
+  system = {
+    activationScripts.extraActivation.text = ''
+      softwareupdate --install-rosetta --agree-to-license
+    '';
 
-  system.keyboard.enableKeyMapping = true;
+    defaults = {
+      NSGlobalDomain = {
+        AppleMeasurementUnits = "Centimeters";
+        AppleMetricUnits = 1;
+        ApplePressAndHoldEnabled = false;
+        AppleTemperatureUnit = "Celsius";
+        InitialKeyRepeat = 15;
+        KeyRepeat = 1;
+      };
+
+      trackpad = {
+        ActuationStrength = 0; # silent clicking
+        FirstClickThreshold = 0; # light clicking
+        SecondClickThreshold = 0; # light force touch
+      };
+    };
+
+    keyboard.enableKeyMapping = true;
+  };
+  
+
 
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;  # default shell on catalina
+
+  # system.activationScripts.extraActivation.text = ''
+  #   # ls -al ${pkgs.toggle-airport}/etc
+  #   # launchctl load -w /Library/LaunchAgents/com.mine.toggleairport.plist
+  # '';
 
   system.stateVersion = 4;
 }
