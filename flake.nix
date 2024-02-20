@@ -1,12 +1,7 @@
 {
   description = "A very basic flake";
 
-  nixConfig = {
-    extra-experimental-features = "nix-command flakes";
-    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
-    extra-substituters = "https://devenv.cachix.org";
-    extra-trusted-users = "yamashita";
-  };
+  nixConfig.extra-experimental-features = "nix-command flakes";
 
   inputs = {
     catppuccin-helix.url = "github:catppuccin/helix";
@@ -37,7 +32,7 @@
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 

@@ -191,6 +191,7 @@ in {
           {
             name = "html";
             language-servers = ["vscode-html-language-server"];
+            auto-format = true;
           }
           {
             name = "yaml";
@@ -199,10 +200,6 @@ in {
           {
             name = "toml";
             language-servers = ["taplo"];
-          }
-          {
-            name = "just";
-            language-servers = ;
           }
           {
             name = "php";
