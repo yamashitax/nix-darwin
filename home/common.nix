@@ -51,6 +51,7 @@ in {
     nodePackages.vscode-langservers-extracted
     nodejs-slim
     rectangle
+    telegram-desktop
     zig.packages."${pkgs.system}".master
     zls
   ];
