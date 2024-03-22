@@ -34,6 +34,7 @@
       "google-japanese-ime"
       "librewolf"
       "sensiblesidebuttons"
+      "sublime-merge"
     ];
   }; 
 
