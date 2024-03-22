@@ -4,6 +4,14 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
 
+  launchd.user.agents."toggleAirport" = {
+    serviceConfig = {
+      Label = "com.mine.toggleairport";
+      RunAtLoad = true;
+    };
+    command = ./toggleAirport.sh;
+  };
+
   fonts = {                               # Fonts
     fontDir.enable = true;
     fonts = with pkgs; [
@@ -33,7 +41,6 @@
     casks = [
       "google-japanese-ime"
       "librewolf"
-      "sensiblesidebuttons"
       "sublime-merge"
     ];
   }; 
@@ -46,6 +53,12 @@
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";    
+    settings = {
+      trusted-users = [
+        "root"
+        "yamashita"
+      ];
+    };
   };
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -75,15 +88,8 @@
     keyboard.enableKeyMapping = true;
   };
   
-
-
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;  # default shell on catalina
-
-  # system.activationScripts.extraActivation.text = ''
-  #   # ls -al ${pkgs.toggle-airport}/etc
-  #   # launchctl load -w /Library/LaunchAgents/com.mine.toggleairport.plist
-  # '';
 
   system.stateVersion = 4;
 }

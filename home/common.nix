@@ -7,6 +7,7 @@
   helix-master,
   nixpkgs,
   catppuccin-helix,
+  runCommand,
   ... 
 }: 
 let
@@ -36,25 +37,32 @@ in {
       });
     })
   ];
+
+  home = {
+    packages = with pkgs; [
+      asciinema
+      bat
+      devenv.packages."${pkgs.system}".devenv
+      fd
+      helix-gpt
+      hyperfine
+      meld
+      nodePackages."@tailwindcss/language-server"
+      nodePackages.intelephense
+      nodePackages.typescript
+      nodePackages.typescript-language-server
+      nodePackages.volar
+      nodePackages.vscode-langservers-extracted
+      nodejs-slim
+      rectangle
+      sensible-side-buttons
+      tableplus
+      telegram-desktop
+      zig.packages."${pkgs.system}".master
+      zls
+    ];
+  };
   
-  home.packages = with pkgs; [
-    asciinema
-    bat
-    devenv.packages."${pkgs.system}".devenv
-    fd
-    hyperfine
-    nodePackages."@tailwindcss/language-server"
-    nodePackages.intelephense
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    nodePackages.volar
-    nodePackages.vscode-langservers-extracted
-    nodejs-slim
-    rectangle
-    telegram-desktop
-    zig.packages."${pkgs.system}".master
-    zls
-  ];
 
   programs = {
     direnv = {
@@ -120,99 +128,26 @@ in {
         };
       };
       languages = {
-        language-server = {
-          nu-lsp = {
-            command = "${pkgs.nushell}/bin/nu";
-            args = ["--lsp"];
-          };
-          rust-analyzer = {
-            config.check.command = "clippy";
-          };
-          yaml-language-server = {
-            config.yaml.format.enable = true;
-            config.yaml.validation = true;
-            config.yaml.schemas = {
-              "https://json.schemastore.org/github-workflow.json" = ".github/{actions,workflows}/*.{yml,yaml}";
-              "https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-tasks.json" = "roles/{tasks,handlers}/*.{yml,yaml}";
-              kubernetes = "kubernetes/*.{yml,yaml}";
-            };
-          };
-          godot = {
-            command = "nc";
-            args = [ "127.0.0.1" "6005" ];
+        language-server = with pkgs; {
+          codeium = {
+            command = "${helix-gpt}/bin/helix-gpt";
+            args = [ "--handler" "codeium" ];
           };
         };
         language = [
           {
             name = "nix";
-            formatter = {command = "alejandra";};
-            language-servers = ["nil"];
             auto-format = true;
-          }
-          {
-            name = "rust";
-            language-servers = ["rust-analyzer"];
-          }
-          {
-            name = "lua";
-            language-servers = ["lua-language-server"];
-          }
-          {
-            name = "javascript";
-            language-servers = ["typescript-language-server"];
-          }
-          {
-            name = "typescript";
-            language-servers = ["typescript-language-server"];
-          }
-          {
-            name = "bash";
-            language-servers = ["bash-language-server"];
-          }
-          {
-            name = "hcl";
-            language-servers = ["terraform-ls"];
-          }
-          {
-            name = "tfvars";
-            language-servers = ["terraform-ls"];
-          }
-          {
-            name = "go";
-            language-servers = ["gopls"];
-          }
-          {
-            name = "nu";
-            language-servers = ["nu-lsp"];
-          }
-          {
-            name = "css";
-            language-servers = ["vscode-css-language-server"];
-          }
-          {
-            name = "html";
-            language-servers = ["vscode-html-language-server"];
-            auto-format = true;
-          }
-          {
-            name = "yaml";
-            language-servers = ["yaml-language-server"];
-          }
-          {
-            name = "toml";
-            language-servers = ["taplo"];
+            formatter = { command = "nixpkgs-fmt"; };
+            language-servers = ["nil" "codeium"];
           }
           {
             name = "php";
-            language-servers = ["intelephense"];
+            language-servers = ["intelephense" "codeium"];
           }
           {
             name = "zig";
-            language-servers = ["zls"];
-          }
-          {
-            name = "gdscript";
-            language-servers = ["godot"];
+            language-servers = ["zls" "codeium"];
           }
         ];
       };

@@ -1,4 +1,6 @@
-{ config, pkgs, ... }:
+{ config
+, pkgs
+, ... }:
 
 {
    users.users."yamashita" = {               # macOS user
