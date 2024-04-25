@@ -41,7 +41,6 @@
     casks = [
       "google-japanese-ime"
       "librewolf"
-      "sublime-merge"
     ];
   }; 
 
@@ -69,13 +68,35 @@
     '';
 
     defaults = {
+      dock = {
+        autohide = true;
+        appswitcher-all-displays = true;
+        persistent-apps = [
+          "/Applications/Safari.app"
+          "/Users/yamashita/Applications/Home Manager Apps/WezTerm.app"
+          "/Users/yamashita/Applications/Home Manager Apps/TablePlus.app"
+        ];
+      };
+
+      finder = {
+        AppleShowAllFiles = true;
+        ShowStatusBar = true;
+        ShowPathbar = true;
+        FXDefaultSearchScope = "SCcf";
+        FXPreferredViewStyle = "Nlsv";
+      };
+
       NSGlobalDomain = {
+        "com.apple.sound.beep.volume" = 0.6065307;
+        _HIHideMenuBar = false;
         AppleMeasurementUnits = "Centimeters";
         AppleMetricUnits = 1;
         ApplePressAndHoldEnabled = false;
         AppleTemperatureUnit = "Celsius";
         InitialKeyRepeat = 15;
         KeyRepeat = 1;
+        NSAutomaticSpellingCorrectionEnabled = false;
+        NSTableViewDefaultSizeMode = 2;
       };
 
       trackpad = {

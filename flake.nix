@@ -4,6 +4,7 @@
   nixConfig.extra-experimental-features = "nix-command flakes";
 
   inputs = {
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     catppuccin-helix.url = "github:catppuccin/helix";
     catppuccin-helix.flake = false;
     catppuccin-wezterm.url = "github:catppuccin/wezterm";
@@ -28,11 +29,11 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     wezterm.flake = false;
-    wezterm.url = "git+https://github.com/wez/wezterm/?rev=600652583594e9f6195a6427d1fabb09068622a7&submodules=1";
+    wezterm.url = "github:notohh/wezterm?dir=nix&ref=nix-add-overlay";
     zig.url = "github:mitchellh/zig-overlay";
   };
 
-  outputs = inputs @ { self, nix-darwin, nixpkgs, home-manager, devenv, zig, helix-master, catppuccin-helix, ... }: {
+  outputs = inputs @ { self, nix-darwin, nixpkgs, home-manager, devenv, zig, helix-master, catppuccin-helix, nix-homebrew, ... }: {
     darwinConfigurations = let
       makeConfig = name: modules: nix-darwin.lib.darwinSystem {
         modules = [
@@ -45,6 +46,14 @@
             home-manager.extraSpecialArgs = { inherit devenv zig helix-master catppuccin-helix nixpkgs; };
             home-manager.users = {
               ${name} = import ./home/${name}/home.nix;
+            };
+          }
+          nix-homebrew.darwinModules.nix-homebrew
+          {
+            nix-homebrew = {
+              enable = true;
+              enableRosetta = true;
+              user = "yamashita";
             };
           }
         ];

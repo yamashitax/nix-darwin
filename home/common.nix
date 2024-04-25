@@ -25,57 +25,42 @@ let
     };
   });
 in {
-  nixpkgs.overlays = [
-    (final: prev: {
-      helix = final.helix.overrideAtttrs(oldAttrs: {
-        patches = [
-          (pkgs.fetchpatch {
-            url = "https://patch-diff.githubusercontent.com/raw/helix-editor/helix/pull/6865.patch";
-            hash = "sha256-qI+seNGaW/p8iiV1HVVcm/acJ8IRWVslEkQPJAHNsxo=";
-          })
-        ];
-      });
-    })
+  home.packages = with pkgs; [
+    asciinema
+    bat
+    devenv.packages."${pkgs.system}".devenv
+    fd
+    helix-gpt
+    hyperfine
+    meld
+    mos
+    nodePackages."@tailwindcss/language-server"
+    nodePackages.intelephense
+    nodePackages.typescript
+    nodePackages.typescript-language-server
+    nodePackages.volar
+    nodePackages.vscode-langservers-extracted
+    nodejs-slim
+    rectangle
+    sensible-side-buttons
+    tableplus
+    telegram-desktop
+    zig.packages."${pkgs.system}".master
+    zls
+    zoom-us
   ];
 
-  home = {
-    packages = with pkgs; [
-      asciinema
-      bat
-      devenv.packages."${pkgs.system}".devenv
-      fd
-      helix-gpt
-      hyperfine
-      meld
-      nodePackages."@tailwindcss/language-server"
-      nodePackages.intelephense
-      nodePackages.typescript
-      nodePackages.typescript-language-server
-      nodePackages.volar
-      nodePackages.vscode-langservers-extracted
-      nodejs-slim
-      rectangle
-      sensible-side-buttons
-      tableplus
-      telegram-desktop
-      zig.packages."${pkgs.system}".master
-      zls
-    ];
-  };
-  
-
   programs = {
-    direnv = {
-      enable = true;
-    };
+    direnv.enable = true;
 
-    fzf = {
-      enable = true;
-    };
+    fzf.enable = true;
 
-    git.ignores = [
-      ".DS_Store"
-    ];
+    git ={
+      enable = true;
+      ignores = [
+        ".DS_Store"
+      ];
+    };
 
     jujutsu = {
       enable = true;
@@ -127,6 +112,7 @@ in {
           };
         };
       };
+
       languages = {
         language-server = with pkgs; {
           codeium = {
@@ -187,9 +173,8 @@ in {
       '';
       enableZshIntegration = true;
     };
-    zsh = {
-      enable = true;
-    };
+
+    zsh.enable = true;
   };
 
   home.file.".config/helix/themes".source = "${catppuccin-helix}/themes/default";
