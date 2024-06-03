@@ -10,46 +10,8 @@
   runCommand,
   ... 
 }: 
-let
-  libresprite = pkgs.libresprite.overrideAttrs(finalAttrs: {
-    src = pkgs.fetchFromGitHub {
-      owner = "LibreSprite";
-      repo = "LibreSprite";
-      rev = "4dac17fd198288d91c07592373449dcdddaf7e24";
-      fetchSubmodules = true;
-      sha256 = "sha256-kh09ERqH8hFF8Dq6c7ea4fBGV6yQFfazoHTRAk+xwOQ=";
-    };
 
-    meta = with lib; {
-      broken = false;
-    };
-  });
-in {
-  home.packages = with pkgs; [
-    asciinema
-    bat
-    devenv.packages."${pkgs.system}".devenv
-    fd
-    helix-gpt
-    hyperfine
-    meld
-    mos
-    nodePackages."@tailwindcss/language-server"
-    nodePackages.intelephense
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    nodePackages.volar
-    nodePackages.vscode-langservers-extracted
-    nodejs-slim
-    rectangle
-    sensible-side-buttons
-    tableplus
-    telegram-desktop
-    zig.packages."${pkgs.system}".master
-    zls
-    zoom-us
-  ];
-
+{
   programs = {
     direnv.enable = true;
 
@@ -68,10 +30,6 @@ in {
         ui = {
           editor = "hx";
           default-command = "log";
-        };
-        user = {
-          name = "山下";
-          email = "git@yamashit.ax";
         };
         snapshot.max-new-file-size = "10MiB";
         template-aliases = {
@@ -114,26 +72,10 @@ in {
       };
 
       languages = {
-        language-server = with pkgs; {
-          codeium = {
-            command = "${helix-gpt}/bin/helix-gpt";
-            args = [ "--handler" "codeium" ];
-          };
-        };
         language = [
           {
-            name = "nix";
-            auto-format = true;
-            formatter = { command = "nixpkgs-fmt"; };
-            language-servers = ["nil" "codeium"];
-          }
-          {
             name = "php";
-            language-servers = ["intelephense" "codeium"];
-          }
-          {
-            name = "zig";
-            language-servers = ["zls" "codeium"];
+            language-servers = ["intelephense"];
           }
         ];
       };
