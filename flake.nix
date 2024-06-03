@@ -15,7 +15,7 @@
     crane.url = "github:ipetkov/crane";
     devenv.inputs.flake-compat.follows = "flake-compat";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
-    devenv.url = "github:cachix/devenv";
+    devenv.url = "github:cachix/devenv/b26b52a4dac68bdc305f6b9df948c97f49b2c3ee";
     flake-compat.flake = false;
     flake-compat.url = "github:edolstra/flake-compat";
     flake-utils.url = "github:numtide/flake-utils";
@@ -53,13 +53,14 @@
             nix-homebrew = {
               enable = true;
               enableRosetta = true;
-              user = "yamashita";
+              user = "${name}";
             };
           }
         ];
       };
     in {
       default = makeConfig "yamashita" [];
+      work = makeConfig "work" [];
     };
 
     darwinPackages = self.darwinConfigurations.default.pkgs;

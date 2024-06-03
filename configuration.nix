@@ -1,16 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, name, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
-
-  launchd.user.agents."toggleAirport" = {
-    serviceConfig = {
-      Label = "com.mine.toggleairport";
-      RunAtLoad = true;
-    };
-    command = ./toggleAirport.sh;
-  };
 
   fonts = {                               # Fonts
     fontDir.enable = true;
@@ -24,6 +16,16 @@
   };
 
   environment = {
+    etc."hosts" = {          # PHP is _extremely slow_ with executing commands without this
+      copy = true;
+      text = ''
+        ::1             localhost
+        127.0.0.1       localhost
+        255.255.255.255 broadcasthost
+
+        127.0.0.1 webdev.test
+      '';
+    };
     shells = with pkgs; [ zsh ];          # Default shell
     variables = {                         # System variables
       EDITOR = "hx";
@@ -38,10 +40,6 @@
       upgrade = false;
       cleanup = "zap";                    # Uninstall not listed packages and casks
     };
-    casks = [
-      "google-japanese-ime"
-      "librewolf"
-    ];
   }; 
 
   security.pam.enableSudoTouchIdAuth = true;
@@ -56,6 +54,7 @@
       trusted-users = [
         "root"
         "yamashita"
+        "work"
       ];
     };
   };
@@ -71,11 +70,6 @@
       dock = {
         autohide = true;
         appswitcher-all-displays = true;
-        persistent-apps = [
-          "/Applications/Safari.app"
-          "/Users/yamashita/Applications/Home Manager Apps/WezTerm.app"
-          "/Users/yamashita/Applications/Home Manager Apps/TablePlus.app"
-        ];
       };
 
       finder = {
